@@ -12,21 +12,15 @@ calculateFuels1 masses =
     sum . fmap calculateFuel $ masses
 
 calculateFuel :: Int -> Int
-calculateFuel mass = floor (fromIntegral mass / 3) - 2
+calculateFuel mass = mass `quot` 3 - 2
 
 calculateFuels2 :: [Int] -> Int
 calculateFuels2 masses =
     sum . fmap calculateFuel2 $ masses
 
 calculateFuel2 :: Int -> Int
-calculateFuel2 mass =
-    go 0 mass
-    where
-        go :: Int -> Int -> Int
-        go acc mass
-            | needsFuels mass = go (acc + calculateFuel mass) (calculateFuel mass)
-            | otherwise       = acc
-        needsFuels mass = calculateFuel mass > 0
+calculateFuel2 masses =
+    sum . tail . takeWhile (> 0) . iterate calculateFuel $ masses
 
 calculate1 :: IO ()
 calculate1 = do
