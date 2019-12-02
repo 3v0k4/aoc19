@@ -13,32 +13,20 @@ import Data.Text as T (splitOn, unpack)
 import Data.Text.IO as T (readFile)
 import Data.Foldable
 
-emptyArray :: Array Int Int
-emptyArray = listArray (1,0) []
-
 restore :: [(Int,Int)] -> Array Int Int -> Array Int Int
 restore xs ys = ys // xs
 
-extract :: Array Int Int -> Maybe Int
-extract xs
-  | null xs   = Nothing
-  | otherwise = Just $ xs ! 0
-
-run :: Array Int Int -> Array Int Int
-run xs =
-  go 0 xs
+run :: Array Int Int -> Maybe Int
+run xs = go 0 xs
   where
-    go i ys
-      | null ys = emptyArray
-      | otherwise =
-          case ys ! i of
-            1  -> go (i+4) (calc (+) ys i)
-            2  -> go (i+4) (calc (*) ys i)
-            99 -> ys
-            op -> emptyArray
+    go i ys =
+      case ys ! i of
+        1  -> go (i+4) (calc (+) ys i)
+        2  -> go (i+4) (calc (*) ys i)
+        99 -> Just $ ys ! 0
+        op -> Nothing
 
-    calc op ys i =
-      ys // [(o, r)]
+    calc op ys i = ys // [(o, r)]
       where
         i1 = ys ! (i+1)
         i2 = ys ! (i+2)
@@ -49,7 +37,7 @@ firstStar :: IO ()
 firstStar = do
   xs :: [Int] <- fmap read . fmap T.unpack . T.splitOn "," <$> T.readFile "src/input"
   let ys = listArray (0, length xs - 1) xs
-  print . extract . run . restore [(1,12),(2,2)] $ ys
+  print . run . restore [(1,12),(2,2)] $ ys
 
 secondStar :: IO ()
 secondStar = do
@@ -59,6 +47,6 @@ secondStar = do
     [ 100 * n + v
     | n <- [0..99]
     , v <- [0..99]
-    , let r = extract . run . restore [(1,n), (2,v)] $ ys
+    , let r = run . restore [(1,n), (2,v)] $ ys
     , r == Just 19690720
     ]
