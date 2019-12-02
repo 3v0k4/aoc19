@@ -2,8 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Lib
-    ( run
-    , firstStar
+    ( firstStar
     , secondStar
     ) where
 
